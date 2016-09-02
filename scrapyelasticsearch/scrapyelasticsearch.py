@@ -75,18 +75,22 @@ class ElasticSearchPipeline(object):
         return unique_key
 
     def index_item(self, item):
-
+        print "INDEX ITEM"
         index_name = self.settings['ELASTICSEARCH_INDEX']
+
         index_suffix_format = self.settings.get('ELASTICSEARCH_INDEX_DATE_FORMAT', None)
 
         if index_suffix_format:
             index_name += "-" + datetime.strftime(datetime.now(),index_suffix_format)
 
         index_action = {
+            '_op_type': 'update',
+             'detect_noop': true,
             '_index': index_name,
             '_type': self.settings['ELASTICSEARCH_TYPE'],
             '_source': dict(item)
         }
+        print index_action
 
         if self.settings['ELASTICSEARCH_UNIQ_KEY'] is not None:
             item_unique_key = item[self.settings['ELASTICSEARCH_UNIQ_KEY']]
