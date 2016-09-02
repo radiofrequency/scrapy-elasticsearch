@@ -88,7 +88,7 @@ class ElasticSearchPipeline(object):
              'detect_noop': True,
             '_index': index_name,
             '_type': self.settings['ELASTICSEARCH_TYPE'],
-            '_source': dict(item)
+            'doc': dict(item)
         }
         print index_action
 
