@@ -75,7 +75,7 @@ class ElasticSearchPipeline(object):
         return unique_key
 
     def index_item(self, item):
-        print "INDEX ITEM"
+        #print "INDEX ITEM"
         index_name = self.settings['ELASTICSEARCH_INDEX']
 
         index_suffix_format = self.settings.get('ELASTICSEARCH_INDEX_DATE_FORMAT', None)
@@ -88,10 +88,10 @@ class ElasticSearchPipeline(object):
              'detect_noop': True,
             '_index': index_name,
             '_type': self.settings['ELASTICSEARCH_TYPE'],
-            'doc': dict(item)
+            'doc': dict(item),
+            "doc_as_upsert" : True
         }
-        print index_action
-
+      
         if self.settings['ELASTICSEARCH_UNIQ_KEY'] is not None:
             item_unique_key = item[self.settings['ELASTICSEARCH_UNIQ_KEY']]
             unique_key = self.get_unique_key(item_unique_key)
@@ -99,11 +99,13 @@ class ElasticSearchPipeline(object):
             index_action['_id'] = item_id
             logging.debug('Generated unique key %s' % item_id)
 
+        #print "sending this"
+        #print index_action
         self.items_buffer.append(index_action)
 
-        if len(self.items_buffer) >= self.settings.get('ELASTICSEARCH_BUFFER_LENGTH', 500):
-            self.send_items()
-            self.items_buffer = []
+        #if len(self.items_buffer) >= self.settings.get('ELASTICSEARCH_BUFFER_LENGTH', 500):
+        self.send_items()
+        self.items_buffer = []
 
     def send_items(self):
         helpers.bulk(self.es, self.items_buffer)
