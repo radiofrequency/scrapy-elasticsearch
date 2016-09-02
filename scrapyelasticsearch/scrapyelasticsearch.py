@@ -85,7 +85,7 @@ class ElasticSearchPipeline(object):
 
         index_action = {
             '_op_type': 'update',
-             'detect_noop': true,
+             'detect_noop': True,
             '_index': index_name,
             '_type': self.settings['ELASTICSEARCH_TYPE'],
             '_source': dict(item)
